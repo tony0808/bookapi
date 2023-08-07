@@ -39,6 +39,11 @@ public class BookService {
         this.modelMapper = modelMapper;
     }
 
+    public BookService(BookRepository bookRepository, ModelMapper modelMapper) {
+        this.bookRepository = bookRepository;
+        this.modelMapper = modelMapper;
+    }
+
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public ResponseEntity<List<BookDTO>> getAllBooks() {
         List<BookDTO> bookDTOs = bookRepository.findAll().stream()
@@ -53,11 +58,9 @@ public class BookService {
         Optional<Book> optionalBook = bookRepository.findById(book_id);
         if(optionalBook.isPresent()) {
             BookDTO bookDTO = modelMapper.map(optionalBook.get(), BookDTO.class);
-            LOG.info("Retrieving book " + book_id + " from DB");
             return new ResponseEntity<>(bookDTO, HttpStatus.OK);
         }
         else {
-            LOG.error("Book with id " + book_id + " is not found in DB");
             throw new BookNotFoundException(book_id);
         }
     }

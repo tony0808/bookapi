@@ -5,29 +5,24 @@ import com.example.bookapi.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("books")
-@RequestScope
 public class BookController {
 
-    @Autowired
     private BookService bookService;
-
-    @Autowired
-    private LogHeaderUsername logHeaderUsername;
+    private final LogHeaderUsername logHeaderUsername;
 
     private final Logger LOG = LoggerFactory.getLogger(BookController.class);
 
     @Autowired
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, LogHeaderUsername logHeaderUsername) {
         this.bookService = bookService;
+        this.logHeaderUsername = logHeaderUsername;
     }
 
     @GetMapping
