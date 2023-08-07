@@ -1,7 +1,5 @@
 package com.example.bookapi.service;
 
-import com.example.bookapi.controller.BookController;
-import com.example.bookapi.dto.AuthorDTO;
 import com.example.bookapi.dto.BookDTO;
 import com.example.bookapi.entity.Author;
 import com.example.bookapi.entity.Book;
@@ -11,8 +9,6 @@ import com.example.bookapi.repository.AuthorRepository;
 import com.example.bookapi.repository.BookRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,21 +36,21 @@ public class BookService {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public ResponseEntity<List<BookDTO>> getAllBooks() {
+    public List<BookDTO> getAllBooks() {
         List<BookDTO> bookDTOs = bookRepository.findAll().stream()
                 .map(book -> modelMapper.map(book, BookDTO.class))
                 .collect(Collectors.toList());
         LOG.info("Retrieving all books from DB.");
-        return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
+        return bookDTOs;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public ResponseEntity<BookDTO> getBookById(Long book_id) {
+    public BookDTO getBookById(Long book_id) {
         Optional<Book> optionalBook = bookRepository.findById(book_id);
         if(optionalBook.isPresent()) {
             BookDTO bookDTO = modelMapper.map(optionalBook.get(), BookDTO.class);
             LOG.info("Retrieving book " + book_id + " from DB");
-            return new ResponseEntity<>(bookDTO, HttpStatus.OK);
+            return bookDTO;
         }
         else {
             LOG.error("Book with id " + book_id + " is not found in DB");
@@ -63,24 +59,24 @@ public class BookService {
     }
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public ResponseEntity<BookDTO> saveBook(BookDTO bookDTO) {
+    public BookDTO saveBook(BookDTO bookDTO) {
         if(bookDTO.getPages() < 0) {
             LOG.warn("The number of pages of the book cannot be negative.");
         }
         Book book = modelMapper.map(bookDTO, Book.class);
         Book savedBook = bookRepository.save(book);
         BookDTO bookDTO1 = modelMapper.map(savedBook, BookDTO.class);
-        return new ResponseEntity<>(bookDTO1, HttpStatus.CREATED);
+        return bookDTO1;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ResponseEntity<BookDTO> deleteBookById(Long book_id) {
+    public BookDTO deleteBookById(Long book_id) {
         Optional<Book> optionalBookbook = bookRepository.findById(book_id);
         if(optionalBookbook.isPresent()) {
             BookDTO bookDTO = modelMapper.map(optionalBookbook.get(), BookDTO.class);
             bookRepository.deleteById(book_id);
             LOG.info("Deleting book with id " + book_id);
-            return new ResponseEntity<>(bookDTO, HttpStatus.OK);
+            return bookDTO;
         }
         else {
             LOG.error("Book with id " + book_id + " does not exist.");
@@ -89,7 +85,7 @@ public class BookService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ResponseEntity<BookDTO> assignExistingAuthorToBook(Long book_id, Long author_id) {
+    public BookDTO assignExistingAuthorToBook(Long book_id, Long author_id) {
         Optional<Book> optionalBook = bookRepository.findById(book_id);
         Optional<Author> optionalAuthor = authorRepository.findById(author_id);
         if(optionalBook.isPresent() && optionalAuthor.isPresent()) {
@@ -98,7 +94,7 @@ public class BookService {
             book.getAuthors().add(author);
             Book savedBook = bookRepository.save(book);
             BookDTO bookDTO = modelMapper.map(savedBook, BookDTO.class);
-            return new ResponseEntity<>(bookDTO, HttpStatus.OK);
+            return bookDTO;
         }
         else if(optionalBook.isEmpty()) {
             throw new BookNotFoundException(book_id);
@@ -109,10 +105,10 @@ public class BookService {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public ResponseEntity<List<BookDTO>> getBooksWithAtLeast2Authors() {
+    public List<BookDTO> getBooksWithAtLeast2Authors() {
         List<BookDTO> bookDTOS = bookRepository.getBooksWithAtLeast2Authors().stream()
                 .map(book -> modelMapper.map(book, BookDTO.class))
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(bookDTOS, HttpStatus.OK);
+        return bookDTOS;
     }
 }
