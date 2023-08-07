@@ -35,6 +35,11 @@ public class BookService {
         this.modelMapper = modelMapper;
     }
 
+    public BookService(BookRepository bookRepository, ModelMapper modelMapper) {
+        this.bookRepository = bookRepository;
+        this.modelMapper = modelMapper;
+    }
+
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<BookDTO> getAllBooks() {
         List<BookDTO> bookDTOs = bookRepository.findAll().stream()
@@ -53,7 +58,6 @@ public class BookService {
             return bookDTO;
         }
         else {
-            LOG.error("Book with id " + book_id + " is not found in DB");
             throw new BookNotFoundException(book_id);
         }
     }

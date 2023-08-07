@@ -35,7 +35,7 @@ class BookServiceTest {
         bookRepository = mock(BookRepository.class);
         bookService = new BookService(bookRepository, authorRepository, new ModelMapper());
         sampleBook = createSampleBook(1L, "", "", 2);
-        sampleBookList = sampleBookList = createListOfSampleBooks();
+        sampleBookList = createListOfSampleBooks();
     }
 
     @Test
