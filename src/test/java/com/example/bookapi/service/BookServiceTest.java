@@ -2,6 +2,7 @@ package com.example.bookapi.service;
 
 import com.example.bookapi.dto.BookDTO;
 import com.example.bookapi.entity.Book;
+import com.example.bookapi.repository.AuthorRepository;
 import com.example.bookapi.repository.BookRepository;
 
 import java.util.ArrayList;
@@ -24,13 +25,15 @@ class BookServiceTest {
 
     private BookService bookService;
     private BookRepository bookRepository;
+    private AuthorRepository authorRepository;
+
     private Book sampleBook;
     private List<Book> sampleBookList;
 
     @BeforeEach
     void setup() {
         bookRepository = mock(BookRepository.class);
-        bookService = new BookService(bookRepository, new ModelMapper());
+        bookService = new BookService(bookRepository, authorRepository, new ModelMapper());
         sampleBook = createSampleBook(1L, "", "", 2);
         sampleBookList = createListOfSampleBooks();
     }
@@ -38,7 +41,8 @@ class BookServiceTest {
     @Test
     void getAllBooks() {
         when(bookRepository.findAll()).thenReturn(sampleBookList);
-        ResponseEntity<List<BookDTO>> res = bookService.getAllBooks();
+        List<BookDTO> books = bookService.getAllBooks();
+        ResponseEntity<List<BookDTO>> res = new ResponseEntity<>(books, HttpStatus.OK);
         Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -46,7 +50,8 @@ class BookServiceTest {
     void getBookById() {
         Optional<Book> bookOptional = Optional.ofNullable(sampleBook);
         when(bookRepository.findById(1L)).thenReturn(bookOptional);
-        ResponseEntity<BookDTO> res = bookService.getBookById(1L);
+        BookDTO bookDTO = bookService.getBookById(1L);
+        ResponseEntity<BookDTO> res = new ResponseEntity<>(bookDTO, HttpStatus.OK);
         Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -55,7 +60,8 @@ class BookServiceTest {
         Book savedBook = createSampleBook(2L, "", "", 3);
         BookDTO bookDTO = new ModelMapper().map(sampleBook, BookDTO.class);
         when(bookRepository.save(sampleBook)).thenReturn(savedBook);
-        ResponseEntity<BookDTO> res = bookService.saveBook(bookDTO);
+        BookDTO bookDTO1 = bookService.saveBook(bookDTO);
+        ResponseEntity<BookDTO> res = new ResponseEntity<>(bookDTO1, HttpStatus.CREATED);
         Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
@@ -63,7 +69,8 @@ class BookServiceTest {
     void deleteBookById() {
         Optional<Book> bookOptional = Optional.ofNullable(sampleBook);
         when(bookRepository.findById(1L)).thenReturn(bookOptional);
-        ResponseEntity<BookDTO> res = bookService.deleteBookById(1L);
+        BookDTO bookDTO = bookService.deleteBookById(1L);
+        ResponseEntity<BookDTO> res = new ResponseEntity<>(bookDTO, HttpStatus.OK);
         Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

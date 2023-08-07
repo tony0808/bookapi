@@ -27,7 +27,8 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<List<BookDTO>> getAllBooks() {
-        return bookService.getAllBooks();
+        List<BookDTO> books = bookService.getAllBooks();
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @GetMapping("scope")
@@ -37,26 +38,31 @@ public class BookController {
 
     @GetMapping("{book_id}")
     public ResponseEntity<BookDTO> getBookById(@PathVariable Long book_id) {
-        return bookService.getBookById(book_id);
+        BookDTO bookDTO = bookService.getBookById(book_id);
+        return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
 
     @GetMapping("at-least-2-authors")
     public ResponseEntity<List<BookDTO>> getBooksWithAtLeast2Authors() {
-        return bookService.getBooksWithAtLeast2Authors();
+        List<BookDTO> booksWithAtLeast2Authors = bookService.getBooksWithAtLeast2Authors();
+        return new ResponseEntity<>(booksWithAtLeast2Authors, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<BookDTO> saveBook(@RequestBody BookDTO bookDTO) {
-        return bookService.saveBook(bookDTO);
+        BookDTO bookDTO1 = bookService.saveBook(bookDTO);
+        return new ResponseEntity<>(bookDTO1, HttpStatus.CREATED);
     }
 
     @PutMapping("{book_id}/{author_id}")
     public ResponseEntity<BookDTO> assignAuthorToBook(@PathVariable Long book_id, @PathVariable Long author_id) {
-        return bookService.assignExistingAuthorToBook(book_id, author_id);
+        BookDTO bookDTO = bookService.assignExistingAuthorToBook(book_id, author_id);
+        return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("{book_id}")
     public ResponseEntity<BookDTO> deleteBookById(@PathVariable Long book_id) {
-        return bookService.deleteBookById(book_id);
+        BookDTO bookDTO = bookService.deleteBookById(book_id);
+        return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
 }
