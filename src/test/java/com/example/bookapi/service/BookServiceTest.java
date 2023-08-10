@@ -1,7 +1,9 @@
 package com.example.bookapi.service;
 
 import com.example.bookapi.dto.BookDTO;
+import com.example.bookapi.entity.Author;
 import com.example.bookapi.entity.Book;
+import com.example.bookapi.repository.AuthorRepository;
 import com.example.bookapi.repository.BookRepository;
 
 import java.util.ArrayList;
@@ -24,13 +26,14 @@ class BookServiceTest {
 
     private BookService bookService;
     private BookRepository bookRepository;
+    private AuthorRepository authorRepository;
     private Book sampleBook;
     private List<Book> sampleBookList;
 
     @BeforeEach
     void setup() {
         bookRepository = mock(BookRepository.class);
-        bookService = new BookService(bookRepository, new ModelMapper());
+        bookService = new BookService(bookRepository, authorRepository, new ModelMapper());
         sampleBook = createSampleBook(1L, "", "", 2);
         sampleBookList = sampleBookList = createListOfSampleBooks();
     }

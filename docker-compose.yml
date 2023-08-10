@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=tony0808
+      - POSTGRES_PASSWORD=pass123
+      - POSTGRES_DB=bookdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - C:/dbdata:/var/lib/postgresql/data
+      - ./sql_scripts/:/docker-entrypoint-initdb.d/
+  app:
+    container_name: bookApp
+    image: bookapp
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  pg-admin:
+    image: dpage/pgadmin4:6
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@email.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "5050:5050"
