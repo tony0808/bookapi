@@ -14,9 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.ext.ScriptUtils;
+import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
+
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,10 +33,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DemoApplicationTests {
 
 	@Container
-	public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:latest")
+	public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:11")
 			.withUsername("tony0808")
 			.withPassword("pass123")
-			.withDatabaseName("bookdb");
+			.withDatabaseName("bookdb")
+			.withCopyToContainer(MountableFile.forClasspathResource("db/"), "/docker-entrypoint-initdb.d/");
 
 	@Autowired
 	private BookService bookService;
@@ -49,31 +57,26 @@ class DemoApplicationTests {
 
 	@Test
 	void retrieveBookTest() {
-		bookService.saveBook(new BookDTO(1L, "titleA", "genreA", 200, null));
-		BookDTO bookDTO = bookService.getBookById(1L).getBody();
-		assertEquals("titleA", bookDTO.getTitle());
+		BookDTO bookDTO = bookService.getBookById(30L).getBody();
+		assertEquals("1984", bookDTO.getTitle());
 	}
 
 	@Test
 	void deleteBookTest() {
-		bookService.saveBook(new BookDTO(1L, "titleA", "genreA", 200, null));
-		BookDTO bookDTO = bookService.getBookById(1L).getBody();
-		assertEquals("titleA", bookDTO.getTitle());
-		bookService.deleteBookById(1L);
+		BookDTO bookDTO = bookService.getBookById(10L).getBody();
+		assert bookDTO != null;
+		assertEquals("The Great Gatsby", bookDTO.getTitle());
+		bookService.deleteBookById(10L);
 		Exception exception = assertThrows(BookNotFoundException.class, () -> bookService.getBookById(1L));
 	}
 
 	@Test
 	void countBooksTest() {
-		bookService.saveBook(new BookDTO(1L, "titleA", "genreA", 200, null));
-		bookService.saveBook(new BookDTO(2L, "titleB", "genreB", 200, null));
-		bookService.saveBook(new BookDTO(3L, "titleC", "genreC", 200, null));
-		bookService.saveBook(new BookDTO(4L, "titleD", "genreD", 200, null));
-		assertEquals(4, bookService.getAllBooks().getBody().size());
+		assertEquals(4, Objects.requireNonNull(bookService.getAllBooks().getBody()).size());
 	}
 
 	@Test
-	void contextLoads() {
+	void contextLoads() throws InterruptedException {
 		System.out.println("Context loads: " + container.getJdbcUrl());
 	}
 
