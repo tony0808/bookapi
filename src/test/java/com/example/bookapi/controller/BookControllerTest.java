@@ -53,7 +53,7 @@ class BookControllerTest {
     @Test
     void getBookById() throws Exception {
         when(bookService.getBookById(1L))
-                .thenReturn(new ResponseEntity<>(sampleBookDTO, HttpStatus.OK));
+                .thenReturn(sampleBookDTO);
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.get("/books/1"))
@@ -64,7 +64,7 @@ class BookControllerTest {
 
     @Test
     void createNewBook() throws Exception {
-        when(bookService.saveBook(sampleBookDTO)).thenReturn(new ResponseEntity<>(sampleBookDTO, HttpStatus.CREATED));
+        when(bookService.saveBook(sampleBookDTO)).thenReturn(sampleBookDTO);
         mockMvc
                 .perform(MockMvcRequestBuilders
                         .post("/books")

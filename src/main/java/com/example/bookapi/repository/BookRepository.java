@@ -13,3 +13,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = SqlQueries.BOOKS_WITH_AT_LEAST_2_AUTHORS, nativeQuery = true)
     List<Book> getBooksWithAtLeast2Authors();
 }
+
+

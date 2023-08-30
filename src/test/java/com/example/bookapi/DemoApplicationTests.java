@@ -57,13 +57,13 @@ class DemoApplicationTests {
 
 	@Test
 	void retrieveBookTest() {
-		BookDTO bookDTO = bookService.getBookById(30L).getBody();
+		BookDTO bookDTO = bookService.getBookById(30L);
 		assertEquals("1984", bookDTO.getTitle());
 	}
 
 	@Test
 	void deleteBookTest() {
-		BookDTO bookDTO = bookService.getBookById(10L).getBody();
+		BookDTO bookDTO = bookService.getBookById(10L);
 		assert bookDTO != null;
 		assertEquals("The Great Gatsby", bookDTO.getTitle());
 		bookService.deleteBookById(10L);
@@ -72,7 +72,7 @@ class DemoApplicationTests {
 
 	@Test
 	void countBooksTest() {
-		assertEquals(4, Objects.requireNonNull(bookService.getAllBooks().getBody()).size());
+		assertEquals(4, Objects.requireNonNull(bookService.getAllBooks()).size());
 	}
 
 	@Test

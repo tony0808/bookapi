@@ -25,3 +25,5 @@ public class BookDTO {
     @JsonIgnoreProperties("books")
     private List<Author> authors;
 }
+
+

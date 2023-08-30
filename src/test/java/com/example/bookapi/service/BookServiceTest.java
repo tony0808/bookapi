@@ -25,6 +25,7 @@ class BookServiceTest {
 
     private BookService bookService;
     private BookRepository bookRepository;
+    private AuthorRepository authorRepository;
     private Book sampleBook;
     private List<Book> sampleBookList;
 
@@ -39,16 +40,16 @@ class BookServiceTest {
     @Test
     void getAllBooks() {
         when(bookRepository.findAll()).thenReturn(sampleBookList);
-        ResponseEntity<List<BookDTO>> res = bookService.getAllBooks();
-        Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<BookDTO> res = bookService.getAllBooks();
+        Assertions.assertThat(res.size()).isEqualTo(3);
     }
 
     @Test
     void getBookById() {
         Optional<Book> bookOptional = Optional.ofNullable(sampleBook);
         when(bookRepository.findById(1L)).thenReturn(bookOptional);
-        ResponseEntity<BookDTO> res = bookService.getBookById(1L);
-        Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        BookDTO res = bookService.getBookById(1L);
+        Assertions.assertThat(res.getId()).isEqualTo(1L);
     }
 
     @Test
@@ -56,16 +57,16 @@ class BookServiceTest {
         Book savedBook = createSampleBook(2L, "", "", 3);
         BookDTO bookDTO = new ModelMapper().map(sampleBook, BookDTO.class);
         when(bookRepository.save(sampleBook)).thenReturn(savedBook);
-        ResponseEntity<BookDTO> res = bookService.saveBook(bookDTO);
-        Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        BookDTO res = bookService.saveBook(bookDTO);
+        Assertions.assertThat(res.getId()).isEqualTo(2L);
     }
 
     @Test
     void deleteBookById() {
         Optional<Book> bookOptional = Optional.ofNullable(sampleBook);
         when(bookRepository.findById(1L)).thenReturn(bookOptional);
-        ResponseEntity<BookDTO> res = bookService.deleteBookById(1L);
-        Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        BookDTO res = bookService.deleteBookById(1L);
+        Assertions.assertThat(res.getId()).isEqualTo(1L);
     }
 
     List<Book> createListOfSampleBooks() {
